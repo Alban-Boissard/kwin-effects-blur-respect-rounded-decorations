@@ -1,7 +1,7 @@
 # Kwin blur effect - Respect rounded corners
 
 
-This kwin effect is a fork of the default kwin blur effect, with the minimal changes
+This kwin effect is a fork of the default kwin blur effect, with minimal changes
 to solve the ["plasma kornerbug"](https://bugs.kde.org/show_bug.cgi?id=395725).
 It works with all decorations, including aurorae one's, and take care of maximized windows, that are assumed to not have rounded corners.
 
@@ -18,7 +18,7 @@ It works with all decorations, including aurorae one's, and take care of maximiz
 
 After installing the effect, go to Settings --> Workspace behavior --> Desktop Effects.
 
-- disable the default blur effect ("Blur")
+- Disable the default blur effect ("Blur")
 - Enable "Blur - Respect rounded corners"
 - Tweak the settings of the effect to match your window decorations.
 ![Settings](doc/settings.png)
@@ -86,7 +86,6 @@ chmod +x uninstall.sh
 ./uninstall.sh
 ```
 
-
 ## Contributing
 
-Any help is welcome.
+Any help is welcome. Feel free to fill an issue if you have one.

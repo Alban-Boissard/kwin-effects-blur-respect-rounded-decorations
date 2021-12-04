@@ -1,0 +1,20 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "",
+                "Name": "Alban Boissard"
+            }
+        ],
+        "Category": "Appearance",
+        "Description": "Blur effect, respect rounded corners of windows decorations",
+        "EnabledByDefault": false,
+        "Id": "kwin4_effect_blur2",
+        "License": "GPL",
+        "Name": "Blur - Respect rounded corners",
+        "ServiceTypes": [
+            "KWin/Effect"
+        ]
+    },
+    "X-KDE-ConfigModule": "kwin_blur2_config"
+}

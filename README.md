@@ -3,7 +3,7 @@
 
 This kwin effect is a fork of the default kwin blur effect, with the minimal changes
 to solve the ["plasma kornerbug"](https://bugs.kde.org/show_bug.cgi?id=395725).
-It works with all decorations, including aurorae one's.
+It works with all decorations, including aurorae one's, and take care of maximized windows, that are assumed to not have rounded corners.
 
 
 ![Screenshot](doc/demo.png)
@@ -23,7 +23,9 @@ After installing the effect, go to Settings --> Workspace behavior --> Desktop E
 - Tweak the settings of the effect to match your window decorations.
 ![Settings](doc/settings.png)
 
+## Plasma version
 
+I only tested the effect on plasma 5.23.3, I don't know if it work with older versions (But it should, the changes from the default blur effect are very minimal)
 
 ## Installation
 

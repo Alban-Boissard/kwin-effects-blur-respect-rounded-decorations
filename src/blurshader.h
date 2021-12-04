@@ -34,7 +34,6 @@ public:
         UpSampleType,
         CopySampleType,
         NoiseSampleType,
-        RedTransparentSampleType // moi
     };
 
     void bind(SampleType sampleType);
@@ -52,7 +51,6 @@ private:
     QScopedPointer<GLShader> m_shaderUpsample;
     QScopedPointer<GLShader> m_shaderCopysample;
     QScopedPointer<GLShader> m_shaderNoisesample;
-    QScopedPointer<GLShader> m_shaderRedTransparencysample;
 
     int m_mvpMatrixLocationDownsample;
     int m_offsetLocationDownsample;

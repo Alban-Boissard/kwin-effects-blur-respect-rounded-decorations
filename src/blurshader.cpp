@@ -28,7 +28,6 @@ BlurShader::BlurShader(QObject *parent)
     QByteArray fragmentUpSource;
     QByteArray fragmentCopySource;
     QByteArray fragmentNoiseSource;
-    QByteArray fragmentRedTransparentSource; // moi
 
     const QByteArray attribute = core ? "in"        : "attribute";
     const QByteArray texture2D = core ? "texture"   : "texture2D";
@@ -150,45 +149,16 @@ BlurShader::BlurShader(QObject *parent)
     streamFragNoise << "}\n";
 
     streamFragNoise.flush();
-
-    
-    // Fragment shader - RedTransparency texture
-    QTextStream streamRedTransparency(&fragmentRedTransparentSource);
-
-    streamRedTransparency << glHeaderString;
-
-    streamRedTransparency << "uniform sampler2D sampler;\n";
-    streamRedTransparency << "\n" << attribute << " vec2 texcoord0;\n";
-    
-    if (core) {
-        streamRedTransparency << "out vec4 fragColor;\n\n";
-    }
-
-    streamRedTransparency << "void main(void)\n";
-    streamRedTransparency << "{\n";
-    streamRedTransparency << "    vec4 color = " << texture2D << "(sampler, texcoord0);\n";
-    streamRedTransparency << "    if (color.a <= 0.01) {\n";
-    streamRedTransparency << "        color = vec4(1.0, 0.0, 0.0, 1.0);\n";
-    streamRedTransparency << "    }\n";
-    streamRedTransparency << "    color.b = color.b/1.3;\n";
-    streamRedTransparency << "    " << fragColor << " = color;\n";
-    streamRedTransparency << "}\n";
-
-    streamRedTransparency.flush();
-    
-    
     
     m_shaderDownsample.reset(ShaderManager::instance()->loadShaderFromCode(vertexSource, fragmentDownSource));
     m_shaderUpsample.reset(ShaderManager::instance()->loadShaderFromCode(vertexSource, fragmentUpSource));
     m_shaderCopysample.reset(ShaderManager::instance()->loadShaderFromCode(vertexSource, fragmentCopySource));
     m_shaderNoisesample.reset(ShaderManager::instance()->loadShaderFromCode(vertexSource, fragmentNoiseSource));
-    m_shaderRedTransparencysample.reset(ShaderManager::instance()->generateCustomShader(ShaderTrait::MapTexture, QByteArray(), fragmentRedTransparentSource));
     
     m_valid = m_shaderDownsample->isValid() &&
               m_shaderUpsample->isValid() &&
               m_shaderCopysample->isValid() &&
-              m_shaderNoisesample->isValid() &&
-              m_shaderRedTransparencysample->isValid();
+              m_shaderNoisesample->isValid();
     
     if (m_valid) {
         m_mvpMatrixLocationDownsample = m_shaderDownsample->uniformLocation("modelViewProjectionMatrix");
@@ -429,10 +399,6 @@ void BlurShader::bind(SampleType sampleType)
     case NoiseSampleType:
         ShaderManager::instance()->pushShader(m_shaderNoisesample.data());
         break;
-    
-    case RedTransparentSampleType:
-        ShaderManager::instance()->pushShader(m_shaderRedTransparencysample.data());
-        break;    
     
     default:
         Q_UNREACHABLE();

@@ -640,68 +640,7 @@ void BlurEffect::drawWindow(EffectWindow *w, int mask, const QRegion &region, Wi
             doBlur(shape, screen, data.opacity(), data.screenProjectionMatrix(), w->isDock() || transientForIsDock, w->frameGeometry());
         }
     }
-    
-    /* Ca fonctionne mais pas pour les decos aurora
-    ShaderManager *shaderManager = ShaderManager::instance();
-    m_shader->bind(BlurShader::RedTransparentSampleType);
-    GLShader *shader = shaderManager->getBoundShader();
-    WindowPaintData deco_paint_data = WindowPaintData(data); 
-    deco_paint_data.shader = shader;
-    QRegion deco_region = w->frameGeometry();
-    QRect contents = w->contentsRect();
-    contents.translate(w->pos());
-    deco_region -= contents;
-    deco_region &= region;
-    effects->drawWindow(w, mask, deco_region, deco_paint_data);
-    // effects->drawWindow(w, mask, region, data);
-    m_shader->unbind();
-    */
     effects->drawWindow(w, mask, region, data);
-  
-    /*
-    QRegion deco_region = w->frameGeometry();
-    deco_region &= region;
-    GLTexture tex_win = KWin::GLTexture(GL_RGBA8, w->frameGeometry().size());
-    // GLTexture tex_win = KWin::GLTexture(GL_RGBA8, effects->virtualScreenSize());
-    GLRenderTarget renderTarget = GLRenderTarget(tex_win);
-    renderTarget.pushRenderTarget(&renderTarget);
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    const QMatrix4x4 projectionMatrix = data.projectionMatrix();
-    WindowPaintData data1(w, projectionMatrix);
-    QRect region1;
-    QRect area = effects->clientArea(ScreenArea, effects->activeScreen(), effects->currentDesktop());
-    setPositionTransformations(data1, region1, w, area, Qt::IgnoreAspectRatio);
-    effects->drawWindow(w,PAINT_WINDOW_OPAQUE | PAINT_WINDOW_TRANSLUCENT | PAINT_WINDOW_TRANSFORMED | PAINT_WINDOW_LANCZOS, region1, data1);
-    // Question : peut on eviter d'avoir les ombres en utilisant inteligement les fonctions de blend ?
-    renderTarget.popRenderTarget();
-    
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    ShaderManager *sm = ShaderManager::instance();
-    m_shader->bind(BlurShader::RedTransparentSampleType);
-    GLShader *shader = sm->getBoundShader();
-    const int mvpMatrixLocation = shader->uniformLocation("modelViewProjectionMatrix");
-    // sm->pushShader(m_shader);
-
-    QMatrix4x4 mvp = data.screenProjectionMatrix();
-    mvp.translate(w->frameGeometry().x(), w->frameGeometry().y());
-    shader->setUniform(mvpMatrixLocation, mvp);
-    // glActiveTexture(GL_TEXTURE0);
-    tex_win.bind();
-    //Cela semble inutile ( en dessous)
-    // QRect source = QRect(0, 0, deco_region.boundingRect().width(), deco_region.boundingRect().height());
-    tex_win.render(deco_region, w->frameGeometry());
-    tex_win.unbind();
-    m_shader->unbind();
-    glDisable(GL_BLEND);
-    */
-    
-    // but: render windows in a texture
-    // Cast to EffectwindowsImpl ?
-    // static_cast<EffectWindowImpl *>(w)->window(); //(copiée depuis composite.cpp l 596)
-    // Copié depuis scene.cpp
-    // w->sceneWindow()->performPaint(mask, region, data);
 }
 
 void BlurEffect::paintEffectFrame(EffectFrame *frame, const QRegion &region, double opacity, double frameOpacity)

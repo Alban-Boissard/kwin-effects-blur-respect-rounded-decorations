@@ -23,6 +23,14 @@ After installing the effect, go to Settings --> Workspace behavior --> Desktop E
 - Tweak the settings of the effect to match your window decorations.
 ![Settings](doc/settings.png)
 
+
+## Limitations
+
+The effect only acts for window decorations. If the window has a decoration that have to be blurred and is not maximized, the rounded corners area are removed from the region "to be blurred". (before the blur occurs)
+
+It seems to be not compatible with [ligthlyShaders](https://github.com/a-parhom/LightlyShaders) or [shapecorners](https://sourceforge.net/projects/shapecorners/).
+
+
 ## Plasma version
 
 I only tested the effect on plasma 5.23.3, I don't know if it work with older versions (But it should, the changes from the default blur effect are very minimal)

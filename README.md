@@ -12,7 +12,7 @@ It works with all decorations, including aurorae one's, and take care of maximiz
 
 *Above right : with the present blur effect*
  
-*(Windows decoration :  [classikstyles](https://github.com/paulmcauley/classikstyles) by paulmcauly)*
+*(Window decorations :  [classikstyles](https://github.com/paulmcauley/classikstyles) by paulmcauly)*
 
 ## Usage
 

@@ -61,6 +61,13 @@ sudo dnf install cmake extra-cmake-modules kf5-kconfig-devel \
     kf5-kcoreaddons-devel kf5-kwindowsystem-devel kwin-devel \
     qt5-qtbase-devel libepoxy-devel kf5-kconfigwidgets-devel
 ```
+On OpenSUSE
+
+```sh
+sudo zypper install cmake extra-cmake-modules kconfig-devel \
+    kcoreaddons-devel kwindowsystem-devel kwin5-devel \
+    libqt5-qtbase-devel libepoxy-devel kconfigwidgets-devel
+```
 
 On Ubuntu
 

@@ -74,7 +74,8 @@ On OpenSUSE
 ```sh
 sudo zypper install cmake extra-cmake-modules kconfig-devel \
     kcoreaddons-devel kwindowsystem-devel kwin5-devel \
-    libqt5-qtbase-devel libepoxy-devel kconfigwidgets-devel
+    libqt5-qtbase-devel libepoxy-devel kconfigwidgets-devel \
+    kwayland-server-devel
 ```
 
 On Ubuntu

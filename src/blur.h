@@ -108,6 +108,8 @@ private:
     int m_expandSize;
     int m_noiseStrength;
     int m_scalingFactor;
+    bool m_roundedBottom;
+
 
     struct OffsetStruct {
         float minOffset;

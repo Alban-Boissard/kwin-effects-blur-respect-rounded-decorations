@@ -249,6 +249,7 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
     m_topRadius = BlurConfig::topDecorationRadius();
     m_bottomRadius = BlurConfig::bottomDecorationRadius();
     m_scalingFactor = qMax(1.0, QGuiApplication::primaryScreen()->logicalDotsPerInch() / 96.0);
+    m_roundedBottom = BlurConfig::roundBottomCorners();
 
     updateTexture();
     updateCornersRegion();
@@ -418,16 +419,35 @@ void BlurEffect::updateCornersRegion()
     m_topRightCorner &= circle;
     m_topRightCorner ^= square;
     
-    square = QRegion(0, 0, m_bottomRadius, m_bottomRadius);
-    circle = QRegion(0, -m_bottomRadius, 2*m_bottomRadius, m_bottomRadius, QRegion::RegionType::Ellipse);
-    m_bottomLeftCorner = QRegion(0, 0, m_bottomRadius, m_bottomRadius);
-    m_bottomRightCorner = QRegion(0, 0, m_bottomRadius, m_bottomRadius);
- 
-    m_bottomLeftCorner &= circle;
-    m_bottomLeftCorner ^= square;
-    circle.translate(-m_bottomRadius, 0);
-    m_bottomRightCorner &= circle;
-    m_bottomRightCorner ^= square;
+    if (m_roundedBottom)
+        {
+            square = QRegion(0, 0, m_bottomRadius, m_bottomRadius);
+            circle = QRegion(0, 0, 2 * m_bottomRadius, 2 * m_bottomRadius, QRegion::RegionType::Ellipse);
+            m_bottomLeftCorner = QRegion(0, 0, m_bottomRadius, m_bottomRadius);
+            m_bottomRightCorner = QRegion(0, 0, m_bottomRadius, m_bottomRadius);
+            circle.translate(0, -m_bottomRadius);
+            m_bottomLeftCorner &= circle;
+            m_bottomLeftCorner ^= square;
+            circle.translate(0, m_bottomRadius);
+            circle.translate(-m_bottomRadius, 0);
+            circle.translate(0, -m_bottomRadius);
+            m_bottomRightCorner &= circle;
+            m_bottomRightCorner ^= square;
+        }
+
+        else
+        {
+            square = QRegion(0, 0, m_bottomRadius, m_bottomRadius);
+            circle = QRegion(0, -m_bottomRadius, 2 * m_bottomRadius, m_bottomRadius, QRegion::RegionType::Ellipse);
+            m_bottomLeftCorner = QRegion(0, 0, m_bottomRadius, m_bottomRadius);
+            m_bottomRightCorner = QRegion(0, 0, m_bottomRadius, m_bottomRadius);
+
+            m_bottomLeftCorner &= circle;
+            m_bottomLeftCorner ^= square;
+            circle.translate(-m_bottomRadius, 0);
+            m_bottomRightCorner &= circle;
+            m_bottomRightCorner ^= square;
+        }
 }
 
 QRegion BlurEffect::blurRegion(const EffectWindow *w) const

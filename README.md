@@ -83,7 +83,7 @@ On Ubuntu
 ```sh
 sudo apt install cmake extra-cmake-modules kwin-dev \
     libkf5config-dev libkf5configwidgets-dev libkf5coreaddons-dev \
-    libkf5windowsystem-dev qtbase5-dev libkwaylandserver-dev
+    libkf5windowsystem-dev qtbase5-dev libkwaylandserver-dev libwayland-dev
 ```
 
 ### After you installed all the required dependencies, clone the repo and use the provided scripts :

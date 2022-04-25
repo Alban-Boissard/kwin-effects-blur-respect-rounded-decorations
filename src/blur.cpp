@@ -15,6 +15,7 @@
 #include <QMatrix4x4>
 #include <QScreen> // for QGuiApplication
 #include <QTime>
+#include <QTimer>
 #include <QWindow>
 #include <cmath> // for ceil()
 
@@ -29,6 +30,9 @@ namespace KWin
 
 static const QByteArray s_blurAtomName = QByteArrayLiteral("_KDE_NET_WM_BLUR_BEHIND_REGION");
 
+KWaylandServer::BlurManagerInterface *BlurEffect::s_blurManager = nullptr;
+QTimer *BlurEffect::s_blurManagerRemoveTimer = nullptr;
+
 BlurEffect::BlurEffect()
 {
     initConfig<BlurConfig>();
@@ -40,13 +44,23 @@ BlurEffect::BlurEffect()
     // ### Hackish way to announce support.
     //     Should be included in _NET_SUPPORTED instead.
     if (m_shader && m_shader->isValid() && m_renderTargetsValid) {
-        net_wm_blur_region = effects->announceSupportProperty(s_blurAtomName, this);
-        KWaylandServer::Display *display = effects->waylandDisplay();
-        if (display) {
-            m_blurManager.reset(new KWaylandServer::BlurManagerInterface(display));
+        if (effects->xcbConnection()) {
+            net_wm_blur_region = effects->announceSupportProperty(s_blurAtomName, this);
         }
-    } else {
-        net_wm_blur_region = 0;
+        if (effects->waylandDisplay()) {
+            if (!s_blurManagerRemoveTimer) {
+                s_blurManagerRemoveTimer = new QTimer(qApp);
+                s_blurManagerRemoveTimer->setSingleShot(true);
+                s_blurManagerRemoveTimer->callOnTimeout([]() {
+                    s_blurManager->remove();
+                    s_blurManager = nullptr;
+                });
+            }
+            s_blurManagerRemoveTimer->stop();
+            if (!s_blurManager) {
+                s_blurManager = new KWaylandServer::BlurManagerInterface(effects->waylandDisplay(), s_blurManagerRemoveTimer);
+            }
+        }
     }
 
     connect(effects, &EffectsHandler::windowAdded, this, &BlurEffect::slotWindowAdded);
@@ -64,12 +78,16 @@ BlurEffect::BlurEffect()
     // Fetch the blur regions for all windows
     const auto stackingOrder = effects->stackingOrder();
     for (EffectWindow *window : stackingOrder) {
-        updateBlurRegion(window);
+        slotWindowAdded(window);
     }
 }
 
 BlurEffect::~BlurEffect()
 {
+    // When compositing is restarted, avoid removing the manager immediately.
+    if (s_blurManager) {
+        s_blurManagerRemoveTimer->start(1000);
+    }
     deleteFBOs();
 }
 
@@ -252,11 +270,6 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
 
     updateTexture();
     updateCornersRegion();
-
-    if (!m_shader || !m_shader->isValid()) {
-        effects->removeSupportProperty(s_blurAtomName, this);
-        m_blurManager.reset();
-    }
 
     // Update all windows for the blur to take effect
     effects->addRepaintFull();
@@ -542,16 +555,19 @@ void BlurEffect::prePaintWindow(EffectWindow* w, WindowPrePaintData& data, std::
         return;
     }
 
-    // to blur an area partially we have to shrink the opaque area of a window
-    QRegion newClip;
     const QRegion oldClip = data.clip;
-    for (const QRect &rect : data.clip) {
-        newClip |= rect.adjusted(m_expandSize, m_expandSize, -m_expandSize, -m_expandSize);
-    }
-    data.clip = newClip;
+    if (data.clip.intersects(m_currentBlur)) {
+        // to blur an area partially we have to shrink the opaque area of a window
+        QRegion newClip;
+        for (const QRect &rect : data.clip) {
+            newClip |= rect.adjusted(m_expandSize, m_expandSize, -m_expandSize, -m_expandSize);
+        }
+        data.clip = newClip;
 
-    // we don't have to blur a region we don't see
-    m_currentBlur -= newClip;
+        // we don't have to blur a region we don't see
+        m_currentBlur -= newClip;
+    }
+
     // if we have to paint a non-opaque part of this window that intersects with the
     // currently blurred region we have to redraw the whole region
     if ((data.paint - oldClip).intersects(m_currentBlur)) {

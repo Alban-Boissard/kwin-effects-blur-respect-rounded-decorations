@@ -69,6 +69,12 @@ sudo dnf install cmake extra-cmake-modules kf5-kconfig-devel \
     kf5-kcoreaddons-devel kf5-kwindowsystem-devel kwin-devel \
     qt5-qtbase-devel libepoxy-devel kf5-kconfigwidgets-devel
 ```
+On fedora 35, it seems you need the following dep too :
+```
+kwayland-server-devel
+kf5-kwayland-devel
+wayland-devel
+```
 On OpenSUSE
 
 ```sh
